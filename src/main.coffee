@@ -13,6 +13,7 @@ engine.add
   height: 100
 
 engine.add
+  class: 'Actor'
   opaque: true
   x: 50
   y: 100
@@ -20,5 +21,22 @@ engine.add
   width: 100
   height: 100
 
+engine.add
+  class: "Wall"
+  x: 0
+  y: 0
+  height: 480
+
+engine.add
+  class: "Wall"
+  x: 640 - 16
+  y: 0
+  height: 480
+
+engine.add
+  class: "Wall"
+  x: 0
+  y: 480 - 16
+  width: 640
 
 engine.start()
