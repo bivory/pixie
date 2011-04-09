@@ -1,5 +1,5 @@
 window.engine = Engine
-  ambientLight: 0.5
+  ambientLight: 0.05
   canvas: $("canvas").powerCanvas()
   includedModules: ['Box2D']
 
@@ -11,6 +11,11 @@ engine.add
   color: "#F00"
   width: 100
   height: 100
+  radius: 1000
+  intensity: 0.5
+  flicker: true
+  flickerOffChance: 0.10
+  flickerOnChance: 0.30
 
 # Walls
 engine.add
