@@ -45,7 +45,7 @@ engine.add
 # Player
 engine.add
   class: "Actor"
-  controller: 0
+  player: 0
   x: [64, 256, 320, 512].rand()
   y: -16
 
@@ -55,8 +55,8 @@ engine.add
 engine.start()
 
 engine.bind "update", ->
+  # Find the players
   playerInfo = {}
-
   engine.eachObject (o) ->
     if o.I.controller? 
       playerInfo[o.I.controller] = o.I
