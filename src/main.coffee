@@ -1,6 +1,7 @@
 window.engine = Engine
   ambientLight: 0.5
   canvas: $("canvas").powerCanvas()
+  includedModules: ['Box2D']
 
 # Add a red square to the scene
 engine.add
