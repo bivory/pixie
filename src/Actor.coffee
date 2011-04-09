@@ -4,12 +4,15 @@ Actor = (I) ->
   $.reverseMerge I,
     color: "blue"
     density: 0.5
-    dynamic: true
-    mobile: true
+    opaque: true # Dynamic lights
+    dynamic: true # Collision
+    mobile: true # Collision
     width: 48
     height: 48
     includedModules: ["Physical"]
     excludedModules: ["Movable"]
+    width: 100
+    height: 100
 
   mass = I.width * I.height
   canJump = false
@@ -27,12 +30,13 @@ Actor = (I) ->
       update: ->
         physics()
         canJump = false
-
+  ###
   self.bind "collision", (other, contact) ->
     canJump ||= contact.GetManifold().m_localPlaneNormal.y == 1
 
     if other.I.class == "Box"
       other.destroy()
+  ###
 
   self
 
