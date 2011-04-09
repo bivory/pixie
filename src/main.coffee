@@ -3,6 +3,7 @@ window.engine = Engine
 
 # Add a red square to the scene
 engine.add
+  class: "Light"
   x: 50
   y: 50
   color: "#F00"
