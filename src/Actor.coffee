@@ -13,4 +13,4 @@ Actor = (I) ->
     width: 100
     height: 100
 
-  self
+  self = GameObject I
