@@ -3,7 +3,7 @@ window.engine = Engine
   canvas: $("canvas").powerCanvas()
   includedModules: ['Box2D']
 
-# Add a red square to the scene
+# Add a light
 engine.add
   class: "Light"
   x: 50
@@ -12,14 +12,18 @@ engine.add
   width: 100
   height: 100
 
+# Walls
 engine.add
-  class: 'Actor'
-  opaque: true
-  x: 50
-  y: 100
-  color: "#F00"
-  width: 100
-  height: 100
+  class: "Wall"
+  x: 0
+  y: 0
+  width: 640
+
+engine.add
+  class: "Wall"
+  x: 0
+  y: 480 - 16
+  width: 640
 
 engine.add
   class: "Wall"
@@ -33,10 +37,21 @@ engine.add
   y: 0
   height: 480
 
+# Player
 engine.add
-  class: "Wall"
-  x: 0
-  y: 480 - 16
-  width: 640
+  class: "Actor"
+  controller: 0
+  x: [64, 256, 320, 512].rand()
+  y: -16
+
+
+
 
 engine.start()
+
+engine.bind "update", ->
+  playerInfo = {}
+
+  engine.eachObject (o) ->
+    if o.I.controller? 
+      playerInfo[o.I.controller] = o.I
