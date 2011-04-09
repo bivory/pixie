@@ -1,4 +1,5 @@
-window.engine = Engine 
+window.engine = Engine
+  ambientLight: 0.05
   canvas: $("canvas").powerCanvas()
 
 # Add a red square to the scene
