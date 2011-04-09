@@ -16768,17 +16768,405 @@ SpeechBox = function(I) {
   });
 })();;
 ;$(function(){ undefined });;
-;
+var Light;
+Light = function(I) {
+  var cacheBuilt, cachedShadowCanvas, corners, drawLightSource, drawObjectShadows, farthestCorners, flickerState, lineTo, self, setCanvasToRemove;
+  I || (I = {});
+  $.reverseMerge(I, {
+    cacheStatic: false,
+    intensity: 1,
+    color: "orange",
+    radius: 500,
+    shadows: true,
+    flicker: false,
+    flickerOffChance: 0.05,
+    flickerOnChance: 0.10
+  });
+  flickerState = "on";
+  if (I.shadows) {
+    I.cacheStatic = true;
+  }
+  if (I.cacheStatic) {
+    cacheBuilt = false;
+    cachedShadowCanvas = $("<canvas width=640 height=480 />").powerCanvas();
+  }
+  lineTo = function(canvas, dest, color) {
+    canvas.strokeColor(color || "black");
+    return canvas.drawLine(I.x, I.y, dest.x, dest.y, 1);
+  };
+  corners = function(object) {
+    return (function(I) {
+      return [Point(I.x, I.y), Point(I.x + I.width, I.y), Point(I.x, I.y + I.height), Point(I.x + I.width, I.y + I.height)];
+    })(object.I);
+  };
+  farthestCorners = function(object, canvas) {
+    var originPoint;
+    originPoint = Point(I.x, I.y);
+    return (function(I) {
+      var centerLine, max, maxCross, min, minCross;
+      centerLine = object.center().subtract(originPoint);
+      min = (max = undefined);
+      minCross = (maxCross = undefined);
+      corners(object).each(function(corner) {
+        var lineToCorner, newCross;
+        lineToCorner = corner.subtract(originPoint);
+        newCross = centerLine.cross(lineToCorner);
+        if (typeof min !== "undefined" && min !== null) {
+          if (newCross < minCross) {
+            min = corner;
+            minCross = newCross;
+          }
+        } else {
+          min = corner;
+          minCross = newCross;
+        }
+        if (typeof max !== "undefined" && max !== null) {
+          if (newCross > maxCross) {
+            max = corner;
+            return (maxCross = newCross);
+          }
+        } else {
+          max = corner;
+          return (maxCross = newCross);
+        }
+      });
+      return [min, max];
+    })(object.I);
+  };
+  drawLightSource = function(canvas) {
+    var context, radgrad;
+    context = canvas.context();
+    context.globalAlpha = I.intensity;
+    radgrad = Light.radialGradient(I, context, true);
+    return canvas.fillCircle(I.x, I.y, I.radius, radgrad);
+  };
+  setCanvasToRemove = function(canvas) {
+    return canvas.globalAlpha(1).compositeOperation("destination-out").fillColor("#000");
+  };
+  drawObjectShadows = function(object, canvas) {
+    var farCorners, veryFar;
+    farCorners = farthestCorners(object, canvas);
+    veryFar = [farCorners[0].subtract(I).norm().scale(1000).add(farCorners[0]), farCorners[1].subtract(I).norm().scale(1000).add(farCorners[1])];
+    return canvas.fillShape(veryFar[0], farCorners[0], farCorners[1], veryFar[1]);
+  };
+  return (self = GameObject(I).extend({
+    draw: function(canvas) {},
+    illuminate: function(canvas) {
+      var cached, mobileCanvas, r, shadows, staticCanvas;
+      if (I.flicker) {
+        r = rand();
+        if (r < I.flickerOffChance) {
+          flickerState = "off";
+        } else if (r < I.flickerOnChance) {
+          flickerState = "on";
+        }
+        if (flickerState === "off") {
+          return null;
+        }
+      }
+      if (I.shadows) {
+        if (I.cacheStatic) {
+          if (cacheBuilt) {
+            staticCanvas = null;
+            mobileCanvas = Light.shadowCanvas();
+            mobileCanvas.globalAlpha(1).compositeOperation("source-over");
+            cached = cachedShadowCanvas.element();
+            mobileCanvas.drawImage(cached, 0, 0, cached.width, cached.height, 0, 0, cached.width, cached.height);
+          } else {
+            staticCanvas = cachedShadowCanvas;
+            staticCanvas.globalAlpha(1).compositeOperation("source-over");
+            drawLightSource(staticCanvas);
+            mobileCanvas = Light.shadowCanvas();
+            cached = cachedShadowCanvas.element();
+            mobileCanvas.drawImage(cached, 0, 0, cached.width, cached.height, 0, 0, cached.width, cached.height);
+          }
+        } else {
+          mobileCanvas = (staticCanvas = Light.shadowCanvas());
+          mobileCanvas.globalAlpha(1).compositeOperation("source-over");
+          drawLightSource(mobileCanvas);
+        }
+        setCanvasToRemove(mobileCanvas);
+        if (staticCanvas) {
+          setCanvasToRemove(staticCanvas);
+        }
+        engine.eachObject(function(object) {
+          if (object.I.opaque) {
+            if (cacheBuilt) {
+              return object.I.mobile ? drawObjectShadows(object, mobileCanvas) : null;
+            } else {
+              if (object.I.mobile) {
+                return drawObjectShadows(object, mobileCanvas);
+              } else {
+                if (I.cacheStatic) {
+                  return drawObjectShadows(object, staticCanvas);
+                }
+              }
+            }
+          }
+        });
+        if (I.cacheStatic) {
+          cacheBuilt = true;
+        }
+        shadows = mobileCanvas.element();
+        return canvas.drawImage(shadows, 0, 0, shadows.width, shadows.height, 0, 0, shadows.width, shadows.height);
+      } else {
+        return drawLightSource(canvas);
+      }
+    }
+  }));
+};
+(function() {
+  var canvas;
+  canvas = $("<canvas width=640 height=480 />").powerCanvas();
+  return (Light.shadowCanvas = function() {
+    canvas.clear();
+    return canvas;
+  });
+})();
+Light.radialGradient = function(c, context, quadratic) {
+  var radgrad;
+  /**
+    c1 = x: c.x, y: c.y, radius: 0
+    c2 = x: c.x, y: c.y, radius: c.radius
+
+    stops =
+      0: "#000"
+      1: "rgba(0, 0, 0, 0)"
+
+    if quadratic
+      $.extend stops,
+        "0.25": "rgba(0, 0, 0, 0.5625)"
+        "0.5": "rgba(0, 0, 0, 0.25)"
+        "0.75": "rgba(0, 0, 0, 0.0625)"
+
+    canvas.buildRadialGradient(c1, c2, stops)
+  */
+  radgrad = context.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius);
+  radgrad.addColorStop(0, "#000");
+  if (quadratic) {
+    radgrad.addColorStop(0.25, "rgba(0, 0, 0, 0.5625)");
+    radgrad.addColorStop(0.5, "rgba(0, 0, 0, 0.25)");
+    radgrad.addColorStop(0.75, "rgba(0, 0, 0, 0.0625)");
+  }
+  radgrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+  return radgrad;
+};;
+var CONTROLLERS, Controller;
+var __slice = Array.prototype.slice;
+Controller = function(actions) {
+  actions || (actions = {
+    up: "up",
+    right: "right",
+    down: "down",
+    left: "left",
+    A: "home",
+    B: "end",
+    C: "pageup",
+    D: "pagedown"
+  });
+  return {
+    actionDown: function() {
+      var triggers;
+      triggers = __slice.call(arguments, 0);
+      return triggers.inject(false, function(down, action) {
+        return down || keydown[actions[action]];
+      });
+    }
+  };
+};
+CONTROLLERS = [];
+[
+  {
+    up: "up",
+    right: "right",
+    down: "down",
+    left: "left",
+    A: "a",
+    B: "s",
+    C: "d",
+    D: "f"
+  }
+].each(function(actions, i) {
+  return (CONTROLLERS[i] = Controller(actions));
+});;
+var Actor;
+Actor = function(I) {
+  I || (I = {});
+  $.reverseMerge(I, {
+    color: "blue",
+    opaque: true,
+    density: 0.5,
+    dynamic: true,
+    mobile: true,
+    includedModules: ["Physical"],
+    excludedModules: ["Movable"],
+    width: 100,
+    height: 100
+  });
+  return self;
+};;
+var Wall;
+Wall = function(I) {
+  var self;
+  I || (I = {});
+  $.reverseMerge(I, {
+    color: Color("beige"),
+    width: 16,
+    height: 16,
+    includedModules: ["Physical"],
+    excludedModules: ["Movable"]
+  });
+  return (self = GameObject(I));
+};;
+var _i, _ref, block, developer, hotkeys, key, objectToUpdate;
+var __hasProp = Object.prototype.hasOwnProperty;
+block = {
+  color: "#CB8",
+  width: 32,
+  height: 32,
+  solid: true,
+  opaque: true,
+  includedModules: ["Physical"],
+  excludedModules: ["Movable"]
+};
+developer = false;
+objectToUpdate = null;
+window.updateObjectProperties = function(newProperties) {
+  return objectToUpdate ? $.extend(objectToUpdate, engine.construct(newProperties)) : null;
+};
+$(document).bind("contextmenu", function(event) {
+  return event.preventDefault();
+});
+$(document).mousedown(function(event) {
+  var object;
+  if (developer) {
+    console.log(event.which);
+    if (event.which === 3) {
+      if (object = engine.objectAt(event.pageX, event.pageY)) {
+        parent.editProperties(object.I);
+        objectToUpdate = object;
+      }
+      return console.log(object);
+    } else if (event.which === 2 || keydown.shift) {
+      return engine.add($.extend({
+        x: event.pageX.snap(32),
+        y: event.pageY.snap(32)
+      }, block));
+    }
+  }
+});
+hotkeys = {
+  esc: function() {
+    developer = !developer;
+    return developer ? engine.pause() : engine.play();
+  },
+  f3: function() {
+    return Local.set("level", engine.saveState());
+  },
+  f4: function() {
+    return engine.loadState(Local.get("level"));
+  },
+  f5: function() {
+    return engine.reload();
+  }
+};
+_ref = hotkeys;
+for (_i in _ref) {
+  if (!__hasProp.call(_ref, _i)) continue;
+  (function() {
+    var key = _i;
+    var fn = _ref[_i];
+    return $(document).bind("keydown", key, function(event) {
+      event.preventDefault();
+      return fn();
+    });
+  })();
+};
+var Player;
+Player = function(I) {
+  var canJump, mass, physics, self;
+  I || (I = {});
+  $.reverseMerge(I, Actor());
+  if (I.player) {
+    I.controller = CONTROLLERS[I.player];
+  }
+  mass = I.width * I.height;
+  canJump = false;
+  physics = function() {
+    if (I.controller == null ? undefined : I.controller.actionDown("A")) {
+      if (canJump) {
+        self.applyImpulse(Point(0, -mass / 10));
+      }
+    }
+    if (I.controller == null ? undefined : I.controller.actionDown("right")) {
+      self.applyImpulse(Point(mass / 10, 0));
+    }
+    return (I.controller == null ? undefined : I.controller.actionDown("left")) ? self.applyImpulse(Point(-mass / 10, 0)) : null;
+  };
+  self = GameObject(I).extend({
+    before: {
+      update: function() {
+        physics();
+        return (canJump = false);
+      }
+    }
+  });
+  /**
+  self.bind "collision", (other, contact) ->
+    canJump ||= contact.GetManifold().m_localPlaneNormal.y == 1
+
+    if other.I.class == "Box"
+      other.destroy()
+  */
+  return self;
+};;
 ;$(function(){ window.engine = Engine({
   ambientLight: 0.05,
-  canvas: $("canvas").powerCanvas()
+  canvas: $("canvas").powerCanvas(),
+  includedModules: ['Box2D']
 });
 engine.add({
+  "class": "Light",
   x: 50,
   y: 50,
   color: "#F00",
   width: 100,
-  height: 100
+  height: 100,
+  radius: 1000,
+  intensity: 0.5,
+  flicker: true,
+  flickerOffChance: 0.10,
+  flickerOnChance: 0.30
+});
+engine.add({
+  "class": "Wall",
+  x: 0,
+  y: 0,
+  width: 640
+});
+engine.add({
+  "class": "Wall",
+  x: 0,
+  y: 480 - 16,
+  width: 640
+});
+engine.add({
+  "class": "Wall",
+  x: 0,
+  y: 0,
+  height: 480
+});
+engine.add({
+  "class": "Wall",
+  x: 640 - 16,
+  y: 0,
+  height: 480
+});
+engine.add({
+  "class": "Actor",
+  player: 0,
+  x: [64, 256, 320, 512].rand(),
+  y: -16
 });
 engine.start();
 engine.bind("update", function() {
