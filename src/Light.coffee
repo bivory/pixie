@@ -8,6 +8,8 @@ Light = (I) ->
     radius: 500
     shadows: true
     flicker: false
+    flickerOffChance: 0.05
+    flickerOnChance: 0.10
 
   flickerState = "on"
 
@@ -97,9 +99,9 @@ Light = (I) ->
     illuminate: (canvas) ->
       if I.flicker
         r = rand()
-        if r < 0.05
+        if r < I.flickerOffChance
           flickerState = "off"
-        else if r < 0.10
+        else if r < I.flickerOnChance
           flickerState = "on"
 
         return if flickerState == "off"
