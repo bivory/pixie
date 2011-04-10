@@ -9,9 +9,10 @@ Player = (I) ->
 
     startRunImpulse: 100
     runImpulse: 10
-    jumpImpulse: 30
+    jumpImpulse: 150
 
   I.controller = CONTROLLERS[I.player] if I.player? 
+  canJump = false
 
   self = Actor(I).extend
     before:
@@ -19,24 +20,26 @@ Player = (I) ->
         physics()
         canJump = false
 
-  canJump = false
-
   physics = ->
     # Jump
     if I.controller.actionDown "A"
       self.applyImpulse(Point(0, -I.jumpImpulse)) if canJump
 
     # Run
-    log self.body()#, self.body().GetLocalVector()
-    runSpeed = if true then I.runImpulse else I.startRunImpulse
+    lv = self.body().GetLinearVelocity()
+    runSpeed = if lv.x isnt 0 then I.runImpulse else I.startRunImpulse
     if I.controller.actionDown "right"
       self.applyImpulse(Point(runSpeed, 0))
     if I.controller.actionDown "left"
       self.applyImpulse(Point(-runSpeed, 0))
 
   self.bind "collision", (other, contact) ->
-    console.log contact
-    canJump ||= contact?.GetManifold().m_localPlaneNormal.y == 1
+    canJump or= contact.GetManifold().m_localPlaneNormal.y == 1
+
+    # Wall Jump
+    if other.I.class == "Wall"
+      canJump or= contact.GetManifold().m_localPlaneNormal.x == 1 or
+        contact.GetManifold().m_localPlaneNormal.x == -1
 
     if other.I.class == "Box"
       other.destroy()
