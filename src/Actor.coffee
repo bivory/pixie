@@ -12,6 +12,6 @@ Actor = (I) ->
     excludedModules: ["Movable"]
     width: 100
     height: 100
-    friction: 0.5
+    friction: 0.7
 
   self = GameObject I
