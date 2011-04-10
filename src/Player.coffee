@@ -7,6 +7,10 @@ Player = (I) ->
     height: 50
     density: 1
 
+    includedModules: ["WallJumper"]
+    wallJump = true
+    wallClass: "People"
+
     startRunImpulse: 100
     runImpulse: 10
     jumpImpulse: 150
@@ -35,11 +39,6 @@ Player = (I) ->
 
   self.bind "collision", (other, contact) ->
     canJump or= contact.GetManifold().m_localPlaneNormal.y == 1
-
-    # Wall Jump
-    if other.I.class == "Wall"
-      canJump or= contact.GetManifold().m_localPlaneNormal.x == 1 or
-        contact.GetManifold().m_localPlaneNormal.x == -1
 
     if other.I.class == "Box"
       other.destroy()
