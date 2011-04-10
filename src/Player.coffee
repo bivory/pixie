@@ -6,18 +6,17 @@ Player = (I) ->
     width: 10
     height: 50
     density: 1
-
-    #includedModules: ["WallJumper"]
     wallJump: true
 
     startRunImpulse: 100
     runImpulse: 10
     jumpImpulse: 150
     canJump: false
+    Actor
 
   I.controller = CONTROLLERS[I.player] if I.player? 
 
-  self = Actor(I).extend
+  self = GameObject(I).extend
     before:
       update: ->
         physics()
@@ -42,5 +41,5 @@ Player = (I) ->
     if other.I.class == "Box"
       other.destroy()
 
+  self.include WallJumper
   self
-
