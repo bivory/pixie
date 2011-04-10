@@ -13,7 +13,7 @@ engine.add
   height: 100
   radius: 1000
   intensity: 0.5
-  flicker: true
+  flicker: false
   flickerOffChance: 0.10
   flickerOnChance: 0.30
 
