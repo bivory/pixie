@@ -44,7 +44,7 @@ engine.add
 
 # Player
 engine.add
-  class: "Actor"
+  class: "Player"
   player: 0
   x: [64, 256, 320, 512].rand()
   y: -16
