@@ -1,9 +1,18 @@
 Player = (I) ->
   I ||= {}
 
-  $.reverseMerge I, Actor()
+  $.reverseMerge I,
+    color: "red"
+    width: 10
+    height: 50
 
-  I.controller = CONTROLLERS[I.player] if I.player
+  I.controller = CONTROLLERS[I.player] if I.player? 
+
+  self = Actor(I).extend
+    before:
+      update: ->
+        physics()
+        canJump = false
 
   mass = I.width * I.height
   canJump = false
@@ -16,18 +25,11 @@ Player = (I) ->
     if I.controller?.actionDown "left"
       self.applyImpulse(Point(-mass/10, 0))
 
-  self = GameObject(I).extend
-    before:
-      update: ->
-        physics()
-        canJump = false
-  ###
   self.bind "collision", (other, contact) ->
-    canJump ||= contact.GetManifold().m_localPlaneNormal.y == 1
+    canJump ||= contact?.GetManifold().m_localPlaneNormal.y == 1
 
     if other.I.class == "Box"
       other.destroy()
-  ###
 
   self
 
