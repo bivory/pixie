@@ -7,27 +7,26 @@ Player = (I) ->
     height: 50
     density: 1
 
-    includedModules: ["WallJumper"]
-    wallJump = true
-    wallClass: "People"
+    #includedModules: ["WallJumper"]
+    wallJump: true
 
     startRunImpulse: 100
     runImpulse: 10
     jumpImpulse: 150
+    canJump: false
 
   I.controller = CONTROLLERS[I.player] if I.player? 
-  canJump = false
 
   self = Actor(I).extend
     before:
       update: ->
         physics()
-        canJump = false
+        I.canJump = false
 
   physics = ->
     # Jump
     if I.controller.actionDown "A"
-      self.applyImpulse(Point(0, -I.jumpImpulse)) if canJump
+      self.applyImpulse(Point(0, -I.jumpImpulse)) if I.canJump
 
     # Run
     lv = self.body().GetLinearVelocity()
@@ -38,7 +37,7 @@ Player = (I) ->
       self.applyImpulse(Point(-runSpeed, 0))
 
   self.bind "collision", (other, contact) ->
-    canJump or= contact.GetManifold().m_localPlaneNormal.y == 1
+    I.canJump or= contact.GetManifold().m_localPlaneNormal.y == 1
 
     if other.I.class == "Box"
       other.destroy()
