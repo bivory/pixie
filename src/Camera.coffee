@@ -4,29 +4,26 @@ Camera = (I) ->
   $.extend I,
     x: 0
     y: 0
-    debug: true
-    shouldDraw: false
     camera: true
     solid: false
     width: 320
     height: 240
     scale: 1/2
 
+    debugText: false
+    debugDraw: false
+
   self = GameObject(I).extend
     draw: (canvas) ->
-      if I.debug
+      if I.debugDraw
         bounds = self.viewPortBounds()
         log bounds if I.age < 5
         canvas.fillColor "rgba(255, 0, 0, 0.5)"
         canvas.fillRect(bounds.topLeft.x, bounds.topLeft.y,
                         bounds.bottomRight.x, bounds.bottomRight.y)
 
-      return if not I.shouldDraw
-      canvas.fillColor "rgba(0, 255, 255, 0.25)"
-      canvas.fillRect(0, 0, I.width, I.height)
-
     drawHUD: (canvas) ->
-      if I.debug
+      if I.debugText
         bounds = self.viewPortBounds()
         canvas.fillColor "rgba(0,0,255, 1)"
         canvas.fillRect(0, 0, canvas.width(), 40)
