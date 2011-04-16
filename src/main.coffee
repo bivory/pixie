@@ -67,8 +67,8 @@ engine.bind "update", ->
 
 # Debug
 hotkeys =
-  t: -> camera.debugText = not camera.debugText
-  v: -> camera.debugDraw = not camera.debugDraw
+  t: -> camera.I.debugText = not camera.I.debugText
+  v: -> camera.I.debugDraw = not camera.I.debugDraw
 
 for key, fn of hotkeys
   $(document).bind "keydown", key, (event) ->
