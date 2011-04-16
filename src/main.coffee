@@ -39,6 +39,10 @@ player1 = engine.add
 # Terrain
 terrain = engine.add
   class: "Terrain"
+  x: 0
+  y: window.engine.canvas().height
+  width: 320
+  height: 240
 
 camera.track player1
 # Size the camera view to the window
@@ -55,4 +59,7 @@ engine.bind "update", ->
 
     # Camera Tracking
     engine.cameraTransform o.cameraTransform() if o.I.camera
+
+    # Terrain
+    o.bounds camera.viewPortBounds() if o.I.terrain
 
