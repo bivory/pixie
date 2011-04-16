@@ -42,15 +42,20 @@ engine.add
   y: 0
   height: 480
 
+# Camera
+camera = engine.add
+  class: "Camera"
+
 # Player
-engine.add
+player1 = engine.add
   class: "Player"
   player: 0
   x: [64, 256, 320, 512].rand()
   y: -16
 
-
-
+camera.track player1
+# Size the camera view to the window
+camera.aperture window.engine.canvas()
 
 engine.start()
 
@@ -58,5 +63,9 @@ engine.bind "update", ->
   # Find the players
   playerInfo = {}
   engine.eachObject (o) ->
-    if o.I.controller? 
-      playerInfo[o.I.controller] = o.I
+    # Controller Input
+    playerInfo[o.I.controller] = o.I if o.I.controller? 
+
+    # Camera Tracking
+    engine.cameraTransform o.cameraTransform() if o.I.camera
+
