@@ -15,18 +15,24 @@ Camera = (I) ->
 
   self = GameObject(I).extend
     draw: (canvas) ->
+
+    drawHUD: (canvas) ->
+      if I.debugDraw or I.debugText or I.debugged = true
+        canvas.clearRect(0, 0, canvas.width(), canvas.height())
+        I.debugged = false
+      else
+        return
+
+      I.debugged = true        
+
       if I.debugDraw
         bounds = self.viewPortBounds()
         log bounds if I.age < 5
         canvas.fillColor "rgba(255, 0, 0, 0.5)"
         canvas.fillRect(bounds.topLeft.x, bounds.topLeft.y,
                         bounds.bottomRight.x, bounds.bottomRight.y)
-
-    drawHUD: (canvas) ->
       if I.debugText
         bounds = self.viewPortBounds()
-        canvas.fillColor "rgba(0,0,255, 1)"
-        canvas.fillRect(0, 0, canvas.width(), 40)
         canvas.fillColor "rgba(255, 255, 255, 1)"
         canvas.fillText "Camera width: #{bounds.width} height: #{bounds.height}", 0,10
         canvas.fillText "tx: #{bounds.topLeft.x} ty: #{bounds.topLeft.y}", 0, 20
