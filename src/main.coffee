@@ -18,13 +18,6 @@ engine.add
   flickerOffChance: 0.10
   flickerOnChance: 0.30
 
-# Walls
-engine.add
-  class: "Wall"
-  x: 0
-  y: 480 - 16
-  width: 640
-
 # Camera
 camera = engine.add
   class: "Camera"
@@ -40,13 +33,12 @@ player1 = engine.add
 terrain = engine.add
   class: "Terrain"
   x: 0
-  y: window.engine.canvas().height
-  width: 320
+  y: window.engine.canvas().height()
+  width: window.engine.canvas().width()
   height: 240
 
 camera.track player1
-# Size the camera view to the window
-camera.aperture window.engine.canvas()
+camera.aperture window.engine.canvas() # Size the camera view to the window
 
 engine.start()
 
