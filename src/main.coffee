@@ -63,3 +63,14 @@ engine.bind "update", ->
     # Terrain
     o.bounds camera.viewPortBounds() if o.I.terrain
 
+
+
+# Debug
+hotkeys =
+  t: -> camera.debugText = not camera.debugText
+  v: -> camera.debugDraw = not camera.debugDraw
+
+for key, fn of hotkeys
+  $(document).bind "keydown", key, (event) ->
+    event.preventDefault()
+    fn()
