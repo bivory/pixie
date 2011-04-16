@@ -17,7 +17,7 @@ Terrain = (I) ->
 
   self = GameObject(I).extend
     draw: (canvas) ->
-      canvas.fillColor "rgba(0, 255, 255, 1)"
+      canvas.fillColor I.color
       canvas.fillRect(I.x, I.y, I.width, I.height)
 
     bounds: (b) ->
