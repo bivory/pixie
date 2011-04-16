@@ -9,6 +9,7 @@ Camera = (I) ->
     solid: false
     width: 320
     height: 240
+    scale: 1/2
 
   self = GameObject(I).extend
     draw: (canvas) ->
@@ -31,9 +32,12 @@ Camera = (I) ->
     cameraTransform: ->
       track = I.trackObject?.I
       track or= I
-      x = -track.x + I.width/2
-      y = -track.y + I.height/2
-      Matrix.translation x, y
+      Matrix.translation(0, 0) # Upper left is the orgin
+        .translate(-track.x, -track.y) # To the object being followed
+        #.scale(I.scale, I.scale)
+        .translate(I.width/2 - track.width/2, I.height/2 - track.height/2) # Center
+
+    zoom: (amount) -> I.scale = amount
 
     track: (go) ->
       I.trackObject = go
