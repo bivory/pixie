@@ -1,4 +1,3 @@
-
 block = 
   color: "#CB8"
   width: 32
@@ -22,17 +21,20 @@ $(document).mousedown (event) ->
   if developer
     console.log event.which
 
+    p = Point event.pageX, event.pageY
+    p = engine.cameraTransform().inverse().transformPoint p
+
     if event.which == 3
-      if object = engine.objectAt(event.pageX, event.pageY)
+      if object = engine.objectAt(p.x, p.y)
         parent.editProperties(object.I)
 
         objectToUpdate = object
 
       console.log object
-    else if event.which == 2 || keydown.shift
+    else if event.which == 2 || keydown.shift    
       engine.add $.extend(
-        x: event.pageX.snap(32)
-        y: event.pageY.snap(32)
+        x: p.x.snap(32)
+        y: p.y.snap(32)
       , block)
 
 hotkeys =
