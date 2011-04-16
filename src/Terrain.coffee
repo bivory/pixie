@@ -14,7 +14,6 @@ Terrain = (I) ->
     solid: true
     friction: 0.7
     density: 0.5
-  log "#{I.x} #{I.y} #{I.width} #{I.height}"
 
   self = GameObject(I).extend
     draw: (canvas) ->
