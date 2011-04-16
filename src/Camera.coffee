@@ -4,6 +4,7 @@ Camera = (I) ->
   $.extend I,
     x: 0
     y: 0
+    debug: true
     shouldDraw: false
     camera: true
     solid: false
@@ -13,9 +14,27 @@ Camera = (I) ->
 
   self = GameObject(I).extend
     draw: (canvas) ->
+      if I.debug
+        bounds = self.viewPortBounds()
+        log bounds if I.age < 5
+        canvas.fillColor "rgba(255, 0, 0, 0.5)"
+        canvas.fillRect(bounds.topLeft.x, bounds.topLeft.y,
+                        bounds.bottomRight.x, bounds.bottomRight.y)
+
       return if not I.shouldDraw
       canvas.fillColor "rgba(0, 255, 255, 0.25)"
       canvas.fillRect(0, 0, I.width, I.height)
+
+    drawHUD: (canvas) ->
+      if I.debug
+        bounds = self.viewPortBounds()
+        canvas.fillColor "rgba(0,0,255, 1)"
+        canvas.fillRect(0, 0, canvas.width(), 40)
+        canvas.fillColor "rgba(255, 255, 255, 1)"
+        canvas.fillText "Camera width: #{bounds.width} height: #{bounds.height}", 0,10
+        canvas.fillText "tx: #{bounds.topLeft.x} ty: #{bounds.topLeft.y}", 0, 20
+        canvas.fillText "bx: #{bounds.bottomRight.x} by: #{bounds.bottomRight.y}", 0, 30
+
 
     aperture: (width, height) ->
       # Getter
@@ -52,7 +71,8 @@ Camera = (I) ->
       inverse = transform.inverse()
       topLeft = inverse.transformPoint Point(0,0)
       bottomRight = inverse.transformPoint Point(I.width, I.height)
-      log topLeft, bottomRight
-      {topLeft: topLeft, bottomRight: bottomRight}
+      width = bottomRight.x - topLeft.x
+      height = bottomRight.y - topLeft.y
+      {topLeft: topLeft, bottomRight: bottomRight, width: width.round(), height: height.round()}
       #Vector3 topLeftCorner = Vector3.Transform(new Vector3(0,0,0),inverseTransform);
       #Vector3 bottomRightCorner = Vector3.Transform(new Vector3(viewport.Width,viewport.Height,0),inverseTransform);
