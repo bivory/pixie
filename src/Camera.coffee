@@ -29,8 +29,7 @@ Camera = (I) ->
       I.height = height
 
     cameraTransform: ->
-      track = I.trackObject?.I 
-      console.log track
+      track = I.trackObject?.I
       track or= I
       x = -track.x + I.width/2
       y = -track.y + I.height/2
