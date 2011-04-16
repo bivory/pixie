@@ -43,6 +43,13 @@ engine.add
   y: 0
   height: 480
 
+engine.add
+  class: "Wall"
+  x: 320
+  y: 320
+  width: 60 
+  opaque: true 
+
 # Camera
 camera = engine.add
   class: "Camera"
