@@ -42,3 +42,17 @@ Camera = (I) ->
 
     track: (go) ->
       I.trackObject = go
+
+    ###
+      Get the bounding rectangle of the view port.
+      NOTE: it does not take into account camera rotations
+    ###
+    viewPortBounds: () ->
+      transform = self.cameraTransform()
+      inverse = transform.inverse()
+      topLeft = inverse.transformPoint Point(0,0)
+      bottomRight = inverse.transformPoint Point(I.width, I.height)
+      log topLeft, bottomRight
+      {topLeft: topLeft, bottomRight: bottomRight}
+      #Vector3 topLeftCorner = Vector3.Transform(new Vector3(0,0,0),inverseTransform);
+      #Vector3 bottomRightCorner = Vector3.Transform(new Vector3(viewport.Width,viewport.Height,0),inverseTransform);
