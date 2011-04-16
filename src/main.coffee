@@ -22,33 +22,8 @@ engine.add
 engine.add
   class: "Wall"
   x: 0
-  y: 0
-  width: 640
-
-engine.add
-  class: "Wall"
-  x: 0
   y: 480 - 16
   width: 640
-
-engine.add
-  class: "Wall"
-  x: 0
-  y: 0
-  height: 480
-
-engine.add
-  class: "Wall"
-  x: 640 - 16
-  y: 0
-  height: 480
-
-engine.add
-  class: "Wall"
-  x: 320
-  y: 320
-  width: 60 
-  opaque: true 
 
 # Camera
 camera = engine.add
@@ -60,6 +35,10 @@ player1 = engine.add
   player: 0
   x: [64, 256, 320, 512].rand()
   y: -16
+
+# Terrain
+terrain = engine.add
+  class: "Terrain"
 
 camera.track player1
 # Size the camera view to the window
