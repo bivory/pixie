@@ -1,7 +1,7 @@
 Camera = (I) ->
   I ||= {}
 
-  $.extend I,
+  $.reverseMerge I,
     x: 0
     y: 0
     camera: true
@@ -14,7 +14,7 @@ Camera = (I) ->
     debugDraw: false
 
   self = GameObject(I).extend
-    draw: (canvas) ->
+    draw: (canvas) -> return
 
     drawHUD: (canvas) ->
       if I.debugDraw or I.debugText or I.debugged = true
