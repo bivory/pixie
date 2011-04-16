@@ -1,8 +1,8 @@
 Terrain = (I) ->
   I ||= {}
 
-  $.extend I,
-    color: "blue"
+  $.reverseMerge I,
+    color: "green"
     terrain: true
     #opaque: true # Dynamic lights
     x: 0
@@ -14,10 +14,11 @@ Terrain = (I) ->
     solid: true
     friction: 0.7
     density: 0.5
+  log "#{I.x} #{I.y} #{I.width} #{I.height}"
 
   self = GameObject(I).extend
     draw: (canvas) ->
-      canvas.fillColor "rgba(0, 255, 255, 0.25)"
-      canvas.fillRect(0, 0, I.width, I.height)
+      canvas.fillColor "rgba(0, 255, 255, 1)"
+      canvas.fillRect(I.x, I.y, I.width, I.height)
 
     bounds: (b) ->
