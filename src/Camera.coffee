@@ -30,12 +30,13 @@ Camera = (I) ->
       I.height = height
 
     cameraTransform: ->
-      track = I.trackObject?.I
-      track or= I
+      track = I.trackObject 
+      track or= self
+      screenCenter = self.center()
       Matrix.translation(0, 0) # Upper left is the orgin
-        .translate(-track.x, -track.y) # To the object being followed
+        .translate(-track.I.x, -track.I.y) # To the object being followed
         #.scale(I.scale, I.scale)
-        .translate(I.width/2 - track.width/2, I.height/2 - track.height/2) # Center
+        .translate(screenCenter.x, screenCenter.y) # Center
 
     zoom: (amount) -> I.scale = amount
 
