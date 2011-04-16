@@ -2,6 +2,7 @@ window.engine = Engine
   ambientLight: 0.05
   canvas: $("canvas").powerCanvas()
   includedModules: ['Box2D']
+  PHYSICS_DEBUG_DRAW: true
 
 # Add a light
 engine.add
