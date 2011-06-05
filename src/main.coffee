@@ -63,6 +63,7 @@ hotkeys =
   v: -> camera.I.debugDraw = not camera.I.debugDraw
 
 for key, fn of hotkeys
-  $(document).bind "keydown", key, (event) ->
-    event.preventDefault()
-    fn()
+  do (fn) ->
+    $(document).bind "keydown", key, (event) ->
+      event.preventDefault()
+      fn()
