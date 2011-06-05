@@ -57,8 +57,7 @@ Camera = (I) ->
 
     cameraTransform: ->
       track = I.trackObject
-      t = track.I.transform.inverse().translate(App.width/2, App.height/2)
-      t
+      track.I.transform?.inverse().scale(I.scale).translate(App.width/2, App.height/2)
 
     zoom: (amount) -> I.scale = amount
 
