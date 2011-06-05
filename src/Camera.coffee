@@ -8,8 +8,7 @@ Camera = (I) ->
     solid: false
     width: 320
     height: 240
-    scale: 1/2
-
+    scale: 1
     debugText: false
     debugDraw: false
 
@@ -17,7 +16,7 @@ Camera = (I) ->
     draw: (canvas) -> return
 
     drawHUD: (canvas) ->
-      if I.debugDraw or I.debugText or I.debugged = true
+      if I.debugDraw or I.debugText or I.debugged
         canvas.clearRect(0, 0, canvas.width(), canvas.height())
         I.debugged = false
       else
@@ -27,17 +26,22 @@ Camera = (I) ->
 
       if I.debugDraw
         bounds = self.viewPortBounds()
-        log bounds if I.age < 5
         canvas.fillColor "rgba(255, 0, 0, 0.5)"
         canvas.fillRect(bounds.topLeft.x, bounds.topLeft.y,
                         bounds.bottomRight.x, bounds.bottomRight.y)
       if I.debugText
         bounds = self.viewPortBounds()
+        track = I.trackObject 
         canvas.fillColor "rgba(255, 255, 255, 1)"
         canvas.fillText "Camera width: #{bounds.width} height: #{bounds.height}", 0,10
-        canvas.fillText "tx: #{bounds.topLeft.x} ty: #{bounds.topLeft.y}", 0, 20
+        canvas.fillText "ux: #{bounds.topLeft.x} uy: #{bounds.topLeft.y}", 0, 20
         canvas.fillText "bx: #{bounds.bottomRight.x} by: #{bounds.bottomRight.y}", 0, 30
+        canvas.fillText "tx: #{track.I.x} ty: #{track.I.y}", 0, 40
+        x = (bounds.bottomRight.x - bounds.topLeft.x) / 2 + bounds.topLeft.x
+        y = (bounds.bottomRight.y - bounds.topLeft.y) / 2 + bounds.topLeft.y
+        canvas.fillText "cx: #{x} cy: #{y}", 0, 50
 
+      return
 
     aperture: (width, height) ->
       # Getter
@@ -52,23 +56,19 @@ Camera = (I) ->
       I.height = height
 
     cameraTransform: ->
-      track = I.trackObject 
-      track or= self
-      screenCenter = self.center()
-      Matrix.translation(0, 0) # Upper left is the orgin
-        .translate(-track.I.x, -track.I.y) # To the object being followed
-        #.scale(I.scale, I.scale)
-        .translate(screenCenter.x, screenCenter.y) # Center
+      track = I.trackObject
+      t = track.I.transform.inverse().translate(App.width/2, App.height/2)
+      console.log t
+      t
 
     zoom: (amount) -> I.scale = amount
 
-    track: (go) ->
-      I.trackObject = go
+    track: (go) -> I.trackObject = go
 
-    ###
-      Get the bounding rectangle of the view port.
-      NOTE: it does not take into account camera rotations
-    ###
+    #
+    # Get the bounding rectangle of the view port.
+    # NOTE: it does not take into account camera rotations
+    #
     viewPortBounds: () ->
       transform = self.cameraTransform()
       inverse = transform.inverse()
@@ -77,5 +77,6 @@ Camera = (I) ->
       width = bottomRight.x - topLeft.x
       height = bottomRight.y - topLeft.y
       {topLeft: topLeft, bottomRight: bottomRight, width: width.round(), height: height.round()}
-      #Vector3 topLeftCorner = Vector3.Transform(new Vector3(0,0,0),inverseTransform);
-      #Vector3 bottomRightCorner = Vector3.Transform(new Vector3(viewport.Width,viewport.Height,0),inverseTransform);
+
+  $.reverseMerge I, {trackObject: self}
+  self
