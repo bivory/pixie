@@ -50,7 +50,7 @@ engine.bind "update", ->
     playerInfo[o.I.controller] = o.I if o.I.controller? 
 
     # Camera Tracking
-    #engine.cameraTransform o.cameraTransform() if o.I.camera
+    engine.cameraTransform o.cameraTransform() if o.I.camera
 
     # Terrain
     #o.bounds camera.viewPortBounds() if o.I.terrain
